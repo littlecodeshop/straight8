@@ -1,0 +1,42 @@
+apply plugin: 'com.android.model.application'
+
+model {
+    android {
+        compileSdkVersion = 22
+            buildToolsVersion = "23.0.0 rc2"
+
+            defaultConfig.with {
+                applicationId = "com.littlecodeshop.straight8"
+                    minSdkVersion.apiLevel = 19
+                    targetSdkVersion.apiLevel = 19
+                    versionCode = 1
+                    versionName = "1.0"
+                    buildConfigFields.with {
+                        create() {
+                            type = "int"
+                                name = "VALUE"
+                                value = "1"
+                        }
+                    }
+            }
+
+    }
+    android.ndk {
+        moduleName = "native"
+        ldLibs += ['android', 'log', 'OpenSLES']
+        stl     = "gnustl_static"
+        cppFlags += "-fpermissive"
+    }
+
+    android.buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles += file('proguard-android.txt')
+        }
+    }
+}
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        compile 'com.android.support:appcompat-v7:22.2.0'
+    }
