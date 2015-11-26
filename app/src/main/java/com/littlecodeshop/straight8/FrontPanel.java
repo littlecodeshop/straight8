@@ -4,13 +4,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class FrontPanel extends AppCompatActivity {
+
+    public PDP8 the8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        the8 = new PDP8();
         setContentView(R.layout.activity_front_panel);
+
+        TextView et = (TextView)findViewById(R.id.textView);
+        et.setText(the8.getVersion());
     }
 
     @Override
