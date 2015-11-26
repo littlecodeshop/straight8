@@ -73,34 +73,9 @@ char * opcode_label[] = {
 struct pdp8cpu cpu;
 struct teletypeASR33 teletype;
 struct tapereader750c tapereader;
+
 unsigned short memory[0xFFF]; //4096 mots de memoire (pas d'extension :))
 
-
-
-void loadtext(char * filename){
-    FILE * fp;
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    fp = fopen(filename, "r");
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
-
-    unsigned short addr,val;
-    while ((read = getline(&line, &len, fp)) != -1) {
-        printf("Retrieved line of length %zu :\n", read);
-        printf("%s", line);
-        sscanf(line,"%ho\t%ho\n",&addr,&val);
-        printf("ADDR :%04o \tVAL :%04o\n",addr,val);
-        memory[addr] = val;
-
-    }
-
-    fclose(fp);
-    if (line)
-        free(line);
-}
 
 void loadfile(char * filename){
     //load a file in the reader
@@ -143,8 +118,9 @@ void dumpCpu()
 
 void dumpMemory(unsigned short addr)
 {
+    int i = 0;
     printf("%04o:",addr);
-    for(int i = 0;i<8;i++){
+    for(i = 0;i<8;i++){
         printf("\t%04o",memory[addr+i]);
     }
     printf("\n");
@@ -244,6 +220,7 @@ void JMPY(unsigned short value)
     unsigned short addr = realAddress(value);
     cpu.PC = addr;
 }
+
 
 void IOTV(unsigned short value)
 {
@@ -839,4 +816,19 @@ int emulate(int argc, char ** argv){
         singleInstruction();
     }
 
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_sendChar(JNIEnv *env, jclass type, jchar c) {
+    //set the kbd flag to 1
+    //put the char in the tti buffer !
+    keyboard_input((unsigned char)c);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_littlecodeshop_straight8_PDP8_getVersion(JNIEnv *env, jclass type) {
+
+    // TODO
+
+    return (*env)->NewStringUTF(env, "Hello World !!!");
 }
