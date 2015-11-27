@@ -1,9 +1,13 @@
+
+
 apply plugin: 'com.android.model.application'
 
 model {
     android {
         compileSdkVersion = 22
             buildToolsVersion = "23.0.0 rc2"
+
+
 
             defaultConfig.with {
                 applicationId = "com.littlecodeshop.straight8"
@@ -20,7 +24,10 @@ model {
                     }
             }
 
+
+
     }
+
     android.ndk {
         moduleName = "native"
         ldLibs += ['android', 'log', 'OpenSLES']
@@ -35,6 +42,11 @@ model {
             minifyEnabled = false
             proguardFiles += file('proguard-android.txt')
         }
+    }
+
+    compileOptions.with {
+        sourceCompatibility=JavaVersion.VERSION_1_7
+        targetCompatibility=JavaVersion.VERSION_1_7
     }
 }
 
