@@ -832,3 +832,80 @@ Java_com_littlecodeshop_straight8_PDP8_getVersion(JNIEnv *env, jclass type) {
 
     return (*env)->NewStringUTF(env, "Hello World !!!");
 }
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_reset(JNIEnv *env, jclass type) {
+
+    //Be nice :) put the RIM loader in
+    //RIM LOADER
+    cpu.SR = 07756;
+    loadAddress();
+    cpu.SR = 06014;                      /* 7756, RFC */
+    deposit();
+    cpu.SR = 06011;                      /* 7757, LOOP, RSF */
+    deposit();
+    cpu.SR = 05357;                      /* 7760 JMP .-1 */
+    deposit();
+    cpu.SR = 06016;                      /* 7761 RFC RRB */
+    deposit();
+    cpu.SR = 07106;                      /* 7762 CLL RTL*/
+    deposit();
+    cpu.SR = 07006;                      /* 7763 RTL */
+    deposit();
+    cpu.SR = 07510;                      /* 7764 SPA*/
+    deposit();
+    cpu.SR = 05374;                      /* 7765 JMP 7774 */
+    deposit();
+    cpu.SR = 07006;                      /* 7766 RTL */
+    deposit();
+    cpu.SR = 06011;                      /* 7767 RSF */
+    deposit();
+    cpu.SR = 05367;                      /* 7770 JMP .-1 */
+    deposit();
+    cpu.SR = 06016;                      /* 7771 RFC RRB */
+    deposit();
+    cpu.SR = 07420;                      /* 7772 SNL */
+    deposit();
+    cpu.SR = 03776;                      /* 7773 DCA I 7776 */
+    deposit();
+    cpu.SR = 03376;                      /* 7774 DCA 7776 */
+    deposit();
+    cpu.SR = 05357;                      /* 7775 JMP 7757 */
+    deposit();
+    cpu.SR = 00000;                      /* 7776, 0 */
+    deposit();
+    cpu.SR = 00000;                      /* 7777, JMP 7701 */
+    deposit();
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_deposit(JNIEnv *env, jclass type) {
+
+    // TODO
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_examine(JNIEnv *env, jclass type) {
+
+    // TODO
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_loadAddress(JNIEnv *env, jclass type) {
+
+    // TODO
+
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
+
+    char dump[100];
+
+    sprintf(dump,"\nAC:%04o L:%01o PC:%o \n",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC);
+
+    return (*env)->NewStringUTF(env, dump);
+}
