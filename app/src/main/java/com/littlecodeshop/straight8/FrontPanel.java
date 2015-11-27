@@ -19,7 +19,7 @@ public class FrontPanel extends AppCompatActivity {
         setContentView(R.layout.activity_front_panel);
 
         TextView et = (TextView)findViewById(R.id.textView);
-        et.setText(the8.getVersion());
+        et.setText(the8.status());
     }
 
     @Override
