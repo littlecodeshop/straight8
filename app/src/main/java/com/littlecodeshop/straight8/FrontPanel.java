@@ -2,12 +2,16 @@ package com.littlecodeshop.straight8;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class FrontPanel extends AppCompatActivity {
+
+    public static final String TAG ="PDP8";
 
     public PDP8 the8;
 
@@ -22,11 +26,26 @@ public class FrontPanel extends AppCompatActivity {
         et.setText(the8.status());
     }
 
+    /******************* PDP8 interface *********************/
     public void step(View view){
         the8.step();
         TextView et = (TextView)findViewById(R.id.textView);
         et.setText(the8.status());
     }
+
+    public void loadAdd(View view){
+        //get the text from edittext
+        EditText srtext = (EditText)findViewById(R.id.editText);
+        String value = srtext.getText().toString();
+        Integer i = Integer.parseInt(value,8);
+        Log.d(TAG, "loadAdd() returned: " + i );
+        the8.setSR((short) i.shortValue());
+        the8.loadAddress();
+    }
+
+
+
+    /*********************************************************/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

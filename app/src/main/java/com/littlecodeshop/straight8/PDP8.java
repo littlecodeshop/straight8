@@ -12,6 +12,7 @@ public class PDP8 {
     public static native void examine();
     public static native void loadAddress();
     public static native void step();
+    public static native void setSR(short value);
     public static native String status();
 
     static {

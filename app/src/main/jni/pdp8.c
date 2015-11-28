@@ -896,7 +896,7 @@ Java_com_littlecodeshop_straight8_PDP8_examine(JNIEnv *env, jclass type) {
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_loadAddress(JNIEnv *env, jclass type) {
 
-    // TODO
+    loadAddress();
 
 }
 
@@ -914,5 +914,12 @@ JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_step(JNIEnv *env, jclass type) {
 
     singleInstruction();
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_setSR(JNIEnv *env, jclass type, jshort value) {
+
+    cpu.SR = value&07777;
 
 }
