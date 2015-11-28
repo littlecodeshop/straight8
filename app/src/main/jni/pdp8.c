@@ -909,3 +909,10 @@ Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
 
     return (*env)->NewStringUTF(env, dump);
 }
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_step(JNIEnv *env, jclass type) {
+
+    singleInstruction();
+
+}

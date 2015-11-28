@@ -22,6 +22,12 @@ public class FrontPanel extends AppCompatActivity {
         et.setText(the8.status());
     }
 
+    public void step(View view){
+        the8.step();
+        TextView et = (TextView)findViewById(R.id.textView);
+        et.setText(the8.status());
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

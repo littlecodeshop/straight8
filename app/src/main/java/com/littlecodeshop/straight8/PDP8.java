@@ -11,6 +11,7 @@ public class PDP8 {
     public static native void deposit();
     public static native void examine();
     public static native void loadAddress();
+    public static native void step();
     public static native String status();
 
     static {
