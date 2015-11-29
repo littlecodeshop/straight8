@@ -43,6 +43,17 @@ public class FrontPanel extends AppCompatActivity {
         the8.loadAddress();
     }
 
+    public void exam(View view){
+        //show the value of a selected memory location
+        the8.examine();
+        EditText srtext = (EditText)findViewById(R.id.editText);
+        srtext.setText("yopyop");
+    }
+
+    public void deposit(View view){
+        the8.deposit();
+    }
+
 
 
     /*********************************************************/

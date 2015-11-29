@@ -882,14 +882,16 @@ Java_com_littlecodeshop_straight8_PDP8_reset(JNIEnv *env, jclass type) {
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_deposit(JNIEnv *env, jclass type) {
 
-    // TODO
+    deposit();
 
 }
 
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_examine(JNIEnv *env, jclass type) {
 
-    // TODO
+    //set AC = mem[PC]
+    unsigned short v = memory[cpu.PC]&07777;
+    cpu.ACL = (cpu.ACL+v)&017777;
 
 }
 
