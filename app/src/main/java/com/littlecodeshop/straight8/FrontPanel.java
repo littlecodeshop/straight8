@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FrontPanel extends AppCompatActivity {
 
     public static final String TAG ="PDP8";
@@ -26,7 +29,21 @@ public class FrontPanel extends AppCompatActivity {
         et.setText(the8.status());
     }
 
+
+    public void updateDisplay(){
+        //get the status string
+        String status = the8.status();
+        Pattern pattern = Pattern.compile("AC:(\\d\\d\\d\\d) L:(\\d) PC:(\\d\\d\\d\\d) MA:(\\d\\d\\d\\d) MB:(\\d\\d\\d\\d) IR:(\\d)");
+        Matcher m =  pattern.matcher(status);
+
+        if(m.find()){
+
+            Log.d(TAG, "step PC "+m.group(3));
+        }
+    }
+
     /******************* PDP8 interface *********************/
+
     public void step(View view){
         the8.step();
         TextView et = (TextView)findViewById(R.id.textView);

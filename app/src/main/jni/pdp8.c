@@ -908,7 +908,7 @@ Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
 
     char dump[100];
 
-    sprintf(dump,"\nAC:%04o L:%01o PC:%o MA:%04o MB:%04o IR:%01o",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC,cpu.MA,cpu.MB,cpu.IR);
+    sprintf(dump,"AC:%04o L:%01o PC:%04o MA:%04o MB:%04o IR:%01o",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC,cpu.MA,cpu.MB,cpu.IR);
 
     return (*env)->NewStringUTF(env, dump);
 }
