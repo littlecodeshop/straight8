@@ -38,7 +38,7 @@ struct pdp8cpu{
     unsigned short MA;
     unsigned short MB;
     unsigned short SR;
-    unsigned char IR;
+    opCode IR;
 
     unsigned char HALT;
 
@@ -174,6 +174,7 @@ unsigned short realAddress(unsigned short value)
         memory[addr] = (memory[addr]+1)&07777;
     }
     //si indirect -> c'est un pointeur sinon on renvois l'address
+    cpu.MA = (indirect?memory[addr]:addr)&07777;// set the address
     return indirect?memory[addr]:addr;
 
 }
@@ -612,14 +613,14 @@ void (*pdp8_exec[8])(unsigned short v) = {ANDY,TADY,ISZY,DCAY,JMSY,JMPY,IOTV,OPR
 
 void execute(unsigned short word)
 {
-    opCode op = word >> 9;
+    cpu.IR = word >> 9;
     unsigned char indirect = (word & 0x100)>>8;
     unsigned char zeropage = (word & 0x80)>>7;
     unsigned char address = (word & 0x7F);
 
     //printf("\n=> %s IND %d ZP %d ADDR:%o PC ->%04o\n",opcode_label[op],indirect,zeropage,address,cpu.PC);
 
-    pdp8_exec[op](word);
+    pdp8_exec[cpu.IR](word);
 }
 
 void singleInstruction()
@@ -907,7 +908,7 @@ Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
 
     char dump[100];
 
-    sprintf(dump,"\nAC:%04o L:%01o PC:%o \n",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC);
+    sprintf(dump,"\nAC:%04o L:%01o PC:%o MA:%04o MB:%04o IR:%01o",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC,cpu.MA,cpu.MB,cpu.IR);
 
     return (*env)->NewStringUTF(env, dump);
 }
