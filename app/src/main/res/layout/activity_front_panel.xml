@@ -7,18 +7,46 @@
     android:weightSum="1">
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="256dp"
+        android:layout_weight="0.52">
 
     <com.littlecodeshop.straight8.LedView
-        android:id="@+id/custView"
+        android:id="@+id/pc_leds"
         android:layout_width="match_parent"
         android:layout_height="78dp"
         android:layout_margin="5dp"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hello"
         custom:numberLeds="12"
+        custom:labelColor="#ffff66" />
+    <com.littlecodeshop.straight8.LedView
+        android:id="@+id/ma_leds"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ff0099"
+        custom:circleLabel="Hello"
+        custom:numberLeds="12"
+        custom:labelColor="#ffff66" />
+    <com.littlecodeshop.straight8.LedView
+        android:id="@+id/mb_leds"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ff0099"
+        custom:circleLabel="Hello"
+        custom:numberLeds="12"
+        custom:labelColor="#ffff66" />
+    <com.littlecodeshop.straight8.LedView
+        android:id="@+id/acl_leds"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ff0099"
+        custom:circleLabel="Hello"
+        custom:numberLeds="13"
         custom:labelColor="#ffff66" />
 
         <TextView

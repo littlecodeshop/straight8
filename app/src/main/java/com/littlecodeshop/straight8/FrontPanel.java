@@ -17,6 +17,10 @@ public class FrontPanel extends AppCompatActivity {
     public static final String TAG ="PDP8";
 
     public PDP8 the8;
+    private LedView pc_leds;
+    private LedView acl_leds;
+    private LedView ma_leds;
+    private LedView mb_leds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,11 @@ public class FrontPanel extends AppCompatActivity {
 
         TextView et = (TextView)findViewById(R.id.textView);
         et.setText(the8.status());
+
+        pc_leds = (LedView)findViewById(R.id.pc_leds);
+        acl_leds = (LedView)findViewById(R.id.acl_leds);
+        ma_leds = (LedView)findViewById(R.id.ma_leds);
+        mb_leds = (LedView)findViewById(R.id.mb_leds);
     }
 
 
@@ -39,6 +48,10 @@ public class FrontPanel extends AppCompatActivity {
         if(m.find()){
 
             Log.d(TAG, "step PC "+m.group(3));
+            pc_leds.setValue(Integer.parseInt(m.group(3)));
+            acl_leds.setValue(Integer.parseInt(m.group(1)));
+            ma_leds.setValue(Integer.parseInt(m.group(4)));
+            mb_leds.setValue(Integer.parseInt(m.group(5)));
         }
     }
 
@@ -48,6 +61,7 @@ public class FrontPanel extends AppCompatActivity {
         the8.step();
         TextView et = (TextView)findViewById(R.id.textView);
         et.setText(the8.status());
+        updateDisplay();
     }
 
     public void loadAdd(View view){
