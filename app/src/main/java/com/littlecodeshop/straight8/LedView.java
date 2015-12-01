@@ -84,5 +84,15 @@ public class LedView extends View {
 
     }
 
+    public int getValue(){
+        return this.value;
+    }
+
+    public void setValue(int newValue){
+        this.value = newValue;
+        //redraw the view
+        this.invalidate();
+        this.requestLayout(); //on a besoin de ca ??
+    }
 
 }
