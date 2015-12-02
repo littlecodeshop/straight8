@@ -61,7 +61,7 @@ public class LedView extends View {
         circlePaint.setColor(circleCol);
 
         int widthofled = this.getMeasuredWidth() / this.numberLeds;
-        int ledradius = widthofled/2;
+        int ledradius = viewHeightHalf;//widthofled/2;
 
         for (int i = 0; i < this.numberLeds ; i++) {
             if(((value>>((numberLeds-1)-i))&0x1)==1){

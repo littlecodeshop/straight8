@@ -11,7 +11,9 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".FrontPanel"
-            android:label="@string/title_activity_front_panel" >
+            android:label="@string/title_activity_front_panel"
+            android:screenOrientation="landscape"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

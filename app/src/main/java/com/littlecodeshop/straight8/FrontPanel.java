@@ -1,5 +1,6 @@
 package com.littlecodeshop.straight8;
 
+import android.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,8 @@ public class FrontPanel extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         the8 = new PDP8();
         setContentView(R.layout.activity_front_panel);
 
@@ -38,12 +41,22 @@ public class FrontPanel extends AppCompatActivity {
         mb_leds = (LedView)findViewById(R.id.mb_leds);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
+
+    }
 
     public void updateDisplay(){
         //get the status string
         String status = the8.status();
         Pattern pattern = Pattern.compile("AC:(\\d\\d\\d\\d) L:(\\d) PC:(\\d\\d\\d\\d) MA:(\\d\\d\\d\\d) MB:(\\d\\d\\d\\d) IR:(\\d)");
-        Matcher m =  pattern.matcher(status);
+        Matcher m = pattern.matcher(status);
 
         if(m.find()){
 
@@ -68,7 +81,7 @@ public class FrontPanel extends AppCompatActivity {
         //get the text from edittext
         EditText srtext = (EditText)findViewById(R.id.editText);
         String value = srtext.getText().toString();
-        Integer i = Integer.parseInt(value,8);
+        Integer i = Integer.parseInt(value, 8);
         Log.d(TAG, "loadAdd() returned: " + i );
         the8.setSR((short) i.shortValue());
         the8.loadAddress();
@@ -89,25 +102,7 @@ public class FrontPanel extends AppCompatActivity {
 
     /*********************************************************/
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_front_panel, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
 }

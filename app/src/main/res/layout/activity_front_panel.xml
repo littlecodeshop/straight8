@@ -1,10 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.littlecodeshop.straight8.FrontPanel"
     android:orientation="vertical"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="@drawable/straight8_panel">
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,7 +17,7 @@
     <com.littlecodeshop.straight8.LedView
         android:id="@+id/pc_leds"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="35dp"
         android:layout_margin="5dp"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hello"
@@ -24,7 +26,7 @@
     <com.littlecodeshop.straight8.LedView
         android:id="@+id/ma_leds"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="35dp"
         android:layout_margin="5dp"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hello"
@@ -33,7 +35,7 @@
     <com.littlecodeshop.straight8.LedView
         android:id="@+id/mb_leds"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="35dp"
         android:layout_margin="5dp"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hello"
@@ -42,7 +44,7 @@
     <com.littlecodeshop.straight8.LedView
         android:id="@+id/acl_leds"
         android:layout_width="match_parent"
-        android:layout_height="78dp"
+        android:layout_height="35dp"
         android:layout_margin="5dp"
         custom:circleColor="#ff0099"
         custom:circleLabel="Hello"
@@ -81,8 +83,6 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Hello Guys :)"
             android:id="@+id/textView"
-            android:layout_below="@id/pipi"
-            android:layout_alignParentStart="true"
             android:layout_marginTop="51dp" />
 
     </LinearLayout>
@@ -98,8 +98,6 @@
             android:layout_height="wrap_content"
             android:text="step"
             android:id="@+id/button"
-            android:layout_below="@+id/textView"
-            android:layout_alignParentStart="true"
             android:onClick="step" />
 
         <Button
@@ -108,9 +106,7 @@
             android:layout_height="wrap_content"
             android:text="exam"
             android:id="@+id/button3"
-            android:onClick="exam"
-            android:layout_alignTop="@+id/button2"
-            android:layout_alignParentEnd="true" />
+            android:onClick="exam" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -118,9 +114,7 @@
             android:layout_height="wrap_content"
             android:text="load add"
             android:id="@+id/button2"
-            android:onClick="loadAdd"
-            android:layout_alignBottom="@+id/button"
-            android:layout_toEndOf="@+id/button" />
+            android:onClick="loadAdd" />
     </LinearLayout>
 
 </LinearLayout>
