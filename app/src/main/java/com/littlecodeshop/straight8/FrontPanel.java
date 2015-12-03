@@ -1,6 +1,7 @@
 package com.littlecodeshop.straight8;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -96,6 +97,11 @@ public class FrontPanel extends AppCompatActivity {
 
     public void deposit(View view){
         the8.deposit();
+    }
+
+    public void showTeletype(View view){
+        Intent intent = new Intent(this, Teletype.class);
+        startActivity(intent);
     }
 
 

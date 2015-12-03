@@ -5,85 +5,107 @@
     android:layout_height="match_parent"
     tools:context="com.littlecodeshop.straight8.FrontPanel"
     android:orientation="vertical"
-    android:weightSum="1"
-    android:background="@drawable/straight8_panel">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="256dp"
-        android:layout_weight="0.52">
-
-    <com.littlecodeshop.straight8.LedView
-        android:id="@+id/pc_leds"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="5dp"
-        custom:circleColor="#ff0099"
-        custom:circleLabel="Hello"
-        custom:numberLeds="12"
-        custom:labelColor="#ffff66" />
-    <com.littlecodeshop.straight8.LedView
-        android:id="@+id/ma_leds"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="5dp"
-        custom:circleColor="#ff0099"
-        custom:circleLabel="Hello"
-        custom:numberLeds="12"
-        custom:labelColor="#ffff66" />
-    <com.littlecodeshop.straight8.LedView
-        android:id="@+id/mb_leds"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="5dp"
-        custom:circleColor="#ff0099"
-        custom:circleLabel="Hello"
-        custom:numberLeds="12"
-        custom:labelColor="#ffff66" />
-    <com.littlecodeshop.straight8.LedView
-        android:id="@+id/acl_leds"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="5dp"
-        custom:circleColor="#ff0099"
-        custom:circleLabel="Hello"
-        custom:numberLeds="13"
-        custom:labelColor="#ffff66" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="SR"
-            android:id="@+id/textView2" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText" />
-    </LinearLayout>
-
-
-
-
+    android:weightSum="1">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/pipi" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="PROGRAM COUNTER"
+            android:id="@+id/textView2" />
+
+        <com.littlecodeshop.straight8.LedView
+        android:id="@+id/pc_leds"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ec8b03"
+        custom:circleLabel="Hello"
+        custom:numberLeds="12"
+        custom:labelColor="#83837e" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Hello Guys :)"
-            android:id="@+id/textView"
-            android:layout_marginTop="51dp" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="MEMORY ADDRESS"
+            android:id="@+id/textView3" />
+
+        <com.littlecodeshop.straight8.LedView
+        android:id="@+id/ma_leds"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ec8b03"
+        custom:circleLabel="Hello"
+        custom:numberLeds="12"
+        custom:labelColor="#83837e" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="MEMORY BUFFER"
+            android:id="@+id/textView4" />
+
+        <com.littlecodeshop.straight8.LedView
+        android:id="@+id/mb_leds"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ec8b03"
+        custom:circleLabel="Hello"
+        custom:numberLeds="12"
+        custom:labelColor="#83837e" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="ACCUMULATOR"
+            android:id="@+id/textView5" />
+
+        <com.littlecodeshop.straight8.LedView
+        android:id="@+id/acl_leds"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_margin="5dp"
+        custom:circleColor="#ec8b03"
+        custom:circleLabel="Hello"
+        custom:numberLeds="13"
+        custom:labelColor="#83837e" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="38dp">
+
+        <Button
+            android:layout_width="42dp"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:id="@+id/button4" />
+
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New ToggleButton"
+            android:id="@+id/toggleButton" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/button5"
+            android:onClick="showTeletype" />
 
     </LinearLayout>
 
@@ -116,5 +138,34 @@
             android:id="@+id/button2"
             android:onClick="loadAdd" />
     </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText" />
+
+        <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pipi" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Hello Guys :)"
+            android:id="@+id/textView"
+            android:layout_marginTop="51dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></LinearLayout>
 
 </LinearLayout>
