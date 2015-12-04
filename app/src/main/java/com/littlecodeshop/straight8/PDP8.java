@@ -14,6 +14,9 @@ public class PDP8 {
     public static native void step();
     public static native void setSR(short value);
     public static native String status();
+    public static native int getTeletypeChar();
+
+    public static native void run(int cycles);
 
     static {
         System.out.println("LOADING PDP8");

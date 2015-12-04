@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 typedef enum {
     AND = 0,
     TAD = 1,
@@ -254,7 +255,7 @@ void IOTV(unsigned short value)
             break;
         case 06041:
             //printf(">>>>>TSF<<<<<\n");
-            teletype.prt_flag = 1;
+            //teletype.prt_flag = 1;
             if(teletype.prt_flag)
             {
                 cpu.PC++;
@@ -268,17 +269,17 @@ void IOTV(unsigned short value)
         case 06044:
             //TPC
             teletype.tto_buffer = (unsigned char)cpu.ACL;
-            printf("%c",teletype.tto_buffer&0177);
-            fflush(stdout);
-            interrupt_countdown = 5000;
+           // printf("%c",teletype.tto_buffer&0177);
+           // fflush(stdout);
+           // interrupt_countdown = 5000;
             break;
         case 06046:
             //TLS
             teletype.prt_flag = 0;
             teletype.tto_buffer = (unsigned char)cpu.ACL;
-            printf("%c",teletype.tto_buffer&0177);
-            fflush(stdout);
-            interrupt_countdown = 5000;
+            //printf("%c",teletype.tto_buffer&0177);
+            //fflush(stdout);
+            //interrupt_countdown = 5000;
             break;
         case 06011:
             //printf("RSF\n");
@@ -766,7 +767,7 @@ int emulate(int argc, char ** argv){
 
     cpu.HALT = 0;
 
-    loadfile("loader.bin"); //load that paper tape in the machine
+    loadfile("/sdcard/loader.bin"); //load that paper tape in the machine
     //loadtext("focal.txt");
     //cpu.SR = 0200; //address de base
     //loadAddress();
@@ -878,6 +879,46 @@ Java_com_littlecodeshop_straight8_PDP8_reset(JNIEnv *env, jclass type) {
     cpu.SR = 00000;                      /* 7777, JMP 7701 */
     deposit();
 
+
+
+    cpu.SR = 07756; //address de base
+    loadAddress();
+
+    cpu.HALT = 0;
+
+    loadfile("/sdcard/loader.bin"); //load that paper tape in the machine
+    //loadtext("focal.txt");
+    //cpu.SR = 0200; //address de base
+    //loadAddress();
+    //while(!cpu.HALT){
+    //    singleInstruction();
+    // }
+
+    //Load loader
+    while(!focal_loaded){
+        singleInstruction();
+    }
+    for(int i=0;i<20;i++){
+        singleInstruction();
+    }
+    loadfile("/sdcard/focal69.bin");
+    cpu.SR = 07777; //address de base
+    loadAddress();
+    cpu.SR = 00000;
+
+
+    while(!cpu.HALT){
+        //dumpCpu();
+        singleInstruction();
+    }
+
+    //now start the focal
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "STARTING FOCAL");
+    cpu.SR = 0200;
+    loadAddress();
+
+    teletype.prt_flag = 1; //ready to receive a new char
+
 }
 
 JNIEXPORT void JNICALL
@@ -911,6 +952,7 @@ Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
     sprintf(dump,"AC:%04o L:%01o PC:%04o MA:%04o MB:%04o IR:%01o",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC,cpu.MA,cpu.MB,cpu.IR);
 
     return (*env)->NewStringUTF(env, dump);
+
 }
 
 JNIEXPORT void JNICALL
@@ -924,5 +966,35 @@ JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_setSR(JNIEnv *env, jclass type, jshort value) {
 
     cpu.SR = value&07777;
+
+}
+
+JNIEXPORT void JNICALL
+Java_com_littlecodeshop_straight8_PDP8_run(JNIEnv *env, jclass type, jint cycles) {
+
+    for(int i=0;i<cycles;i++){
+        if(interrupt_countdown > 0){
+            interrupt_countdown--;
+            if(interrupt_countdown == 0){
+                interrupt_countdown = -1;
+                interrupt();
+            }
+
+        }
+        singleInstruction();
+
+    }
+
+}
+
+JNIEXPORT jint JNICALL
+Java_com_littlecodeshop_straight8_PDP8_getTeletypeChar(JNIEnv *env, jclass type) {
+
+    if(!teletype.prt_flag){
+        interrupt_countdown = 100;
+        teletype.prt_flag = 1;
+        return teletype.tto_buffer&0177;
+    }
+    else return -1;
 
 }

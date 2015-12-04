@@ -31,6 +31,8 @@ public class FrontPanel extends AppCompatActivity {
 
 
         the8 = new PDP8();
+        the8.reset();
+
         setContentView(R.layout.activity_front_panel);
 
         TextView et = (TextView)findViewById(R.id.textView);
@@ -80,28 +82,41 @@ public class FrontPanel extends AppCompatActivity {
 
     public void loadAdd(View view){
         //get the text from edittext
-        EditText srtext = (EditText)findViewById(R.id.editText);
-        String value = srtext.getText().toString();
-        Integer i = Integer.parseInt(value, 8);
-        Log.d(TAG, "loadAdd() returned: " + i );
-        the8.setSR((short) i.shortValue());
-        the8.loadAddress();
+//        EditText srtext = (EditText)findViewById(R.id.editText);
+//        String value = srtext.getText().toString();
+//        Integer i = Integer.parseInt(value, 8);
+//        Log.d(TAG, "loadAdd() returned: " + i );
+//        the8.setSR((short) i.shortValue());
+//        the8.loadAddress();
+
+        the8.sendChar('A');
     }
 
     public void exam(View view){
         //show the value of a selected memory location
-        the8.examine();
-        EditText srtext = (EditText)findViewById(R.id.editText);
-        srtext.setText("yopyop");
+        //the8.examine();
+        //EditText srtext = (EditText)findViewById(R.id.editText);
+        //srtext.setText("yopyop");
+        the8.run(1000);
+        int c = the8.getTeletypeChar();
+        if(c!=-1){
+            Log.d("PDP8", "TELETYPR PUCNH "+(char)c);
+        }
+
     }
 
-    public void deposit(View view){
+    public void deposit(View view) {
         the8.deposit();
+
     }
 
     public void showTeletype(View view){
         Intent intent = new Intent(this, Teletype.class);
         startActivity(intent);
+    }
+
+    public void run(View view){
+
     }
 
 
