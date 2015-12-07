@@ -107,6 +107,15 @@
             android:id="@+id/button5"
             android:onClick="showTeletype" />
 
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="run"
+            android:id="@+id/button6"
+            android:clickable="true"
+            android:onClick="run" />
+
     </LinearLayout>
 
     <LinearLayout

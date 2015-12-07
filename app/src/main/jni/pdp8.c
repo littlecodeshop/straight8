@@ -255,12 +255,10 @@ void IOTV(unsigned short value)
             break;
         case 06041:
             //printf(">>>>>TSF<<<<<\n");
-            //teletype.prt_flag = 1;
             if(teletype.prt_flag)
             {
                 cpu.PC++;
             }
-            //getchar();
             break;
         case 06042:
             //printf(">>>>>TCF<<<<<\n");
@@ -820,11 +818,15 @@ int emulate(int argc, char ** argv){
 
 }
 
+unsigned char pipi[9]= {'T','Y','P','E',' ','4','+','3','\r'};
+int toto = 0;
+
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_sendChar(JNIEnv *env, jclass type, jchar c) {
     //set the kbd flag to 1
     //put the char in the tti buffer !
-    keyboard_input((unsigned char)c);
+    //keyboard_input((unsigned char)c);
+    keyboard_input(pipi[toto++]);
 }
 
 JNIEXPORT jstring JNICALL
@@ -990,8 +992,9 @@ Java_com_littlecodeshop_straight8_PDP8_run(JNIEnv *env, jclass type, jint cycles
 JNIEXPORT jint JNICALL
 Java_com_littlecodeshop_straight8_PDP8_getTeletypeChar(JNIEnv *env, jclass type) {
 
+
     if(!teletype.prt_flag){
-        interrupt_countdown = 100;
+        interrupt_countdown = 1;
         teletype.prt_flag = 1;
         return teletype.tto_buffer&0177;
     }

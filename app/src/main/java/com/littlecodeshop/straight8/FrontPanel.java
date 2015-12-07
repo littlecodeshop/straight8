@@ -2,6 +2,7 @@ package com.littlecodeshop.straight8;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -89,7 +90,7 @@ public class FrontPanel extends AppCompatActivity {
 //        the8.setSR((short) i.shortValue());
 //        the8.loadAddress();
 
-        the8.sendChar('A');
+        the8.sendChar('\n');
     }
 
     public void exam(View view){
@@ -102,6 +103,7 @@ public class FrontPanel extends AppCompatActivity {
         if(c!=-1){
             Log.d("PDP8", "TELETYPR PUCNH "+(char)c);
         }
+        updateDisplay();
 
     }
 
@@ -116,6 +118,7 @@ public class FrontPanel extends AppCompatActivity {
     }
 
     public void run(View view){
+        new PDP8Runner().execute(the8);
 
     }
 
@@ -124,6 +127,40 @@ public class FrontPanel extends AppCompatActivity {
     /*********************************************************/
 
 
+    //Now lets create a PDP8 runner
+    private class PDP8Runner extends AsyncTask<PDP8,String,String> {
+
+        @Override
+        protected void onPreExecute(){
+            Log.d("PDPRUNNER", " PRE EXECUTE");
+        }
+
+        @Override
+        protected String doInBackground(PDP8... pdp){
+            while(!isCancelled()){
+                pdp[0].run(1000);
+                int c = pdp[0].getTeletypeChar();
+                if(c!=-1){
+                    publishProgress("TELETYPE OUT :"+(char)c);
+                }
+            }
+            return "FINISHED";
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values){
+            Log.d("PDPRUNNER", "update :)"+values[0]);
+            pc_leds.setValue(0777);
+
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+        }
+    }
+    
+    
 
 
 }
