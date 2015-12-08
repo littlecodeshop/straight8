@@ -140,7 +140,7 @@ public class FrontPanel extends AppCompatActivity {
             while(!isCancelled()){
                 pdp[0].run(1000);
                 int c = pdp[0].getTeletypeChar();
-                if(c!=-1){
+                if(c>0){
                     publishProgress("TELETYPE OUT :"+(char)c);
                 }
             }

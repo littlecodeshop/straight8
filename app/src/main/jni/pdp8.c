@@ -261,11 +261,13 @@ void IOTV(unsigned short value)
             }
             break;
         case 06042:
-            //printf(">>>>>TCF<<<<<\n");
+            //TCF
+            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TCF<<<<");
             teletype.prt_flag = 0;
             break;
         case 06044:
             //TPC
+            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TPC<<<<");
             teletype.tto_buffer = (unsigned char)cpu.ACL;
            // printf("%c",teletype.tto_buffer&0177);
            // fflush(stdout);
@@ -273,11 +275,10 @@ void IOTV(unsigned short value)
             break;
         case 06046:
             //TLS
+            //printf(">>>>>TLS<<<<<\n");
+            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TLS<<<<");
             teletype.prt_flag = 0;
             teletype.tto_buffer = (unsigned char)cpu.ACL;
-            //printf("%c",teletype.tto_buffer&0177);
-            //fflush(stdout);
-            //interrupt_countdown = 5000;
             break;
         case 06011:
             //printf("RSF\n");
@@ -992,12 +993,15 @@ Java_com_littlecodeshop_straight8_PDP8_run(JNIEnv *env, jclass type, jint cycles
 JNIEXPORT jint JNICALL
 Java_com_littlecodeshop_straight8_PDP8_getTeletypeChar(JNIEnv *env, jclass type) {
 
-
-    if(!teletype.prt_flag){
+    int c = -1;
+    if((!teletype.prt_flag)){
         interrupt_countdown = 1;
         teletype.prt_flag = 1;
-        return teletype.tto_buffer&0177;
+        c = teletype.tto_buffer&0177;
+        teletype.tto_buffer = 00;
+        //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "TELETYPE %d", c);
     }
-    else return -1;
 
+
+    return c;
 }
