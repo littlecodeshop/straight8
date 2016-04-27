@@ -5,14 +5,14 @@ apply plugin: 'com.android.model.application'
 model {
     android {
         compileSdkVersion = 22
-            buildToolsVersion = "23.0.0 rc2"
+            buildToolsVersion = "23.0.2"
 
 
 
-            defaultConfig.with {
+            defaultConfig {
                 applicationId = "com.littlecodeshop.straight8"
                     minSdkVersion.apiLevel = 15
-                    targetSdkVersion.apiLevel = 19
+                    targetSdkVersion.apiLevel = 23
                     versionCode = 1
                     versionName = "1.0"
                     buildConfigFields.with {
@@ -30,21 +30,21 @@ model {
 
     android.ndk {
         moduleName = "native"
-        ldLibs += ['android', 'log', 'OpenSLES']
         stl     = "gnustl_static"
-        cppFlags += "-fpermissive"
-        CFlags += "-std=c99"
+        ldLibs.addAll(['android', 'log', 'OpenSLES'])
+        cppFlags.addAll("-fpermissive")
+        CFlags.addAll("-std=c99")
 
     }
 
     android.buildTypes {
         release {
             minifyEnabled = false
-            proguardFiles += file('proguard-android.txt')
+            proguardFiles.add(file('proguard-android.txt'))
         }
     }
 
-    compileOptions.with {
+    android.compileOptions {
         sourceCompatibility=JavaVersion.VERSION_1_7
         targetCompatibility=JavaVersion.VERSION_1_7
     }
