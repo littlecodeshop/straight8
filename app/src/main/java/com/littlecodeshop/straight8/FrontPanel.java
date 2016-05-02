@@ -32,12 +32,16 @@ public class FrontPanel extends AppCompatActivity {
 
 
         the8 = new PDP8();
-        the8.reset();
+        //je dois demarrer le PDP dans une thread !
+        //avant il faut enregistrer des callbacks !
+
+        //the8.start();
+        new PDP8Runner().execute(the8);
 
         setContentView(R.layout.activity_front_panel);
 
         TextView et = (TextView)findViewById(R.id.textView);
-        et.setText(the8.status());
+        et.setText(/*the8.status()*/"hello set this");
 
         pc_leds = (LedView)findViewById(R.id.pc_leds);
         acl_leds = (LedView)findViewById(R.id.acl_leds);
@@ -58,7 +62,7 @@ public class FrontPanel extends AppCompatActivity {
 
     public void updateDisplay(){
         //get the status string
-        String status = the8.status();
+        String status = "AC:0000 L:0 PC:0000 MA:0000 MB:0000 IR:0";//the8.status();
         Pattern pattern = Pattern.compile("AC:(\\d\\d\\d\\d) L:(\\d) PC:(\\d\\d\\d\\d) MA:(\\d\\d\\d\\d) MB:(\\d\\d\\d\\d) IR:(\\d)");
         Matcher m = pattern.matcher(status);
 
@@ -75,9 +79,9 @@ public class FrontPanel extends AppCompatActivity {
     /******************* PDP8 interface *********************/
 
     public void step(View view){
-        the8.step();
+        //the8.step();
         TextView et = (TextView)findViewById(R.id.textView);
-        et.setText(the8.status());
+        et.setText("set this"/*the8.status()*/);
         updateDisplay();
     }
 
@@ -90,7 +94,7 @@ public class FrontPanel extends AppCompatActivity {
 //        the8.setSR((short) i.shortValue());
 //        the8.loadAddress();
 
-        the8.sendChar('\n');
+        //the8.sendChar('\n');
     }
 
     public void exam(View view){
@@ -98,17 +102,17 @@ public class FrontPanel extends AppCompatActivity {
         //the8.examine();
         //EditText srtext = (EditText)findViewById(R.id.editText);
         //srtext.setText("yopyop");
-        the8.run(1000);
-        int c = the8.getTeletypeChar();
-        if(c!=-1){
-            Log.d("PDP8", "TELETYPR PUCNH "+(char)c);
-        }
+        //the8.run(1000);
+        //int c = the8.getTeletypeChar();
+        //if(c!=-1){
+        //    Log.d("PDP8", "TELETYPR PUCNH "+(char)c);
+        //}
         updateDisplay();
 
     }
 
     public void deposit(View view) {
-        the8.deposit();
+        //the8.deposit();
 
     }
 
@@ -137,12 +141,20 @@ public class FrontPanel extends AppCompatActivity {
 
         @Override
         protected String doInBackground(PDP8... pdp){
+
+            Log.d("PDPRUNNER", " DO IN BACKGROUND");
+
+            pdp[0].start(); // infinite loop !
+
             while(!isCancelled()){
-                pdp[0].run(1000);
-                int c = pdp[0].getTeletypeChar();
-                if(c>0){
-                    publishProgress("TELETYPE OUT :"+(char)c);
-                }
+
+
+
+               // pdp[0].run(1000);
+               // int c = pdp[0].getTeletypeChar();
+               // if(c>0){
+               //     publishProgress("TELETYPE OUT :"+(char)c);
+               // }
             }
             return "FINISHED";
         }

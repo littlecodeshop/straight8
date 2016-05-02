@@ -21,7 +21,7 @@ public class Teletype extends AppCompatActivity {
         setContentView(R.layout.activity_teletype);
 
         the8 = new PDP8();
-        the8.reset();
+        //the8.reset();
 
         TextView printerView = (TextView)findViewById(R.id.printerView);
 

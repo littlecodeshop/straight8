@@ -1,53 +1,23 @@
-//
-// Created by rribier on 26/11/2015.
-//
-
-#include "pdp8.h"
-
 //Reference card :
 //http://homepage.cs.uiowa.edu/~jones/pdp8/refcard/74.html
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include "pdp8.h"
+#include <android/log.h>
 
 
-typedef enum {
-    AND = 0,
-    TAD = 1,
-    ISZ = 2,
-    DCA = 3,
-    JMS = 4,
-    JMP = 5,
-    IOT = 6,
-    OPR = 7
-} opCode;
 
-typedef enum {
-    FETCH = 0,
-    EXEC  = 1,
-    DEFER = 2,
-    BREAK = 3
-} majorState;
 
 int focal_loaded = 0;
 int interrupt_countdown = -1;
 
-struct pdp8cpu{
+char (*key_in_callback)(void);
+void (*tty_out_callback)(char c);
 
-    unsigned short ACL;
-    unsigned short PC;
-    unsigned short MA;
-    unsigned short MB;
-    unsigned short SR;
-    opCode IR;
 
-    unsigned char HALT;
-
-    unsigned char INTER;
-
-    //current state
-    majorState state;
-};
 
 struct teletypeASR33 {
     unsigned char tti_buffer; //8 bit buffer contains the last typed char
@@ -67,19 +37,44 @@ struct tapereader750c {
 
 
 char * opcode_label[] = {
-        "AND","TAD","ISZ","DCA","JMS","JMP","IOT","OPR"
+    "AND","TAD","ISZ","DCA","JMS","JMP","IOT","OPR"
 };
 
-//le hardware
+//le hardware 
 struct pdp8cpu cpu;
 struct teletypeASR33 teletype;
 struct tapereader750c tapereader;
-
 unsigned short memory[0xFFF]; //4096 mots de memoire (pas d'extension :))
 
 
+
+void loadtext(char * filename){
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen(filename, "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    unsigned short addr,val;
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("Retrieved line of length %zu :\n", read);
+        printf("%s", line);
+        sscanf(line,"%ho\t%ho\n",&addr,&val);
+        printf("ADDR :%04o \tVAL :%04o\n",addr,val);
+        memory[addr] = val;
+
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+}
+
 void loadfile(char * filename){
-    //load a file in the reader
+    //load a file in the reader 
 
     FILE * pFile;
     long lSize;
@@ -119,9 +114,8 @@ void dumpCpu()
 
 void dumpMemory(unsigned short addr)
 {
-    int i = 0;
     printf("%04o:",addr);
-    for(i = 0;i<8;i++){
+    for(int i = 0;i<8;i++){
         printf("\t%04o",memory[addr+i]);
     }
     printf("\n");
@@ -147,7 +141,7 @@ void interrupt()
         memory[00000] = cpu.PC;
         //printf("JMS =============> I DEPOSIT %04o SUR %04o\n",cpu.PC,addr);
         cpu.PC = (00001)&07777;
-        //reset interrupt
+        //reset interrupt 
         cpu.INTER = 0;
     }
 }
@@ -167,7 +161,7 @@ unsigned short realAddress(unsigned short value)
     unsigned short prefix = currentpage?((cpu.PC-1)&07600):00;
     unsigned short addr = prefix|address;
 
-    // printf("real address :%04o\n",addr);
+   // printf("real address :%04o\n",addr);
 
     //si indirect je dois voir si il faut pas faire un autoindex
     if(indirect&&(addr>=010)&&(addr<=017)){
@@ -175,7 +169,6 @@ unsigned short realAddress(unsigned short value)
         memory[addr] = (memory[addr]+1)&07777;
     }
     //si indirect -> c'est un pointeur sinon on renvois l'address
-    cpu.MA = (indirect?memory[addr]:addr)&07777;// set the address
     return indirect?memory[addr]:addr;
 
 }
@@ -223,7 +216,6 @@ void JMPY(unsigned short value)
     cpu.PC = addr;
 }
 
-
 void IOTV(unsigned short value)
 {
     switch(value){
@@ -240,13 +232,13 @@ void IOTV(unsigned short value)
             cpu.ACL&=010000;
             break;
         case 06034:
-        {
+            {
             printf(">>>>>KRS<<<<<\n");
             unsigned short tmp = (unsigned short)teletype.tti_buffer;
             cpu.ACL = (cpu.ACL&017400)|tmp;}
             break;
         case 06036:
-        {
+            {
             //printf(">>>>>KRB<<<<<\n");
             teletype.kbd_flag = 0;
             cpu.ACL&=010000;
@@ -255,30 +247,33 @@ void IOTV(unsigned short value)
             break;
         case 06041:
             //printf(">>>>>TSF<<<<<\n");
+            teletype.prt_flag = 1;
             if(teletype.prt_flag)
             {
                 cpu.PC++;
             }
+            //getchar();
             break;
         case 06042:
-            //TCF
-            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TCF<<<<");
+            //printf(">>>>>TCF<<<<<\n");
             teletype.prt_flag = 0;
             break;
         case 06044:
             //TPC
-            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TPC<<<<");
             teletype.tto_buffer = (unsigned char)cpu.ACL;
-           // printf("%c",teletype.tto_buffer&0177);
-           // fflush(stdout);
-           // interrupt_countdown = 5000;
+            //printf("%c",teletype.tto_buffer&0177);
+            //fflush(stdout);
+            tty_out_callback(teletype.tto_buffer&0177);
+            interrupt_countdown = 5000;
             break;
         case 06046:
             //TLS
-            //printf(">>>>>TLS<<<<<\n");
-            //__android_log_print(ANDROID_LOG_DEBUG,"LOG_TAG", ">>>>TLS<<<<");
             teletype.prt_flag = 0;
             teletype.tto_buffer = (unsigned char)cpu.ACL;
+            //printf("%c",teletype.tto_buffer&0177);
+            //fflush(stdout);
+            tty_out_callback(teletype.tto_buffer&0177);
+            interrupt_countdown = 5000;
             break;
         case 06011:
             //printf("RSF\n");
@@ -287,47 +282,47 @@ void IOTV(unsigned short value)
             }
             break;
         case 06012:
-        {
-            unsigned short tmp = (unsigned short)tapereader.reader_buffer;
-            cpu.ACL = (cpu.ACL)|tmp;
-            //printf("RRB %c\n",tapereader.reader_buffer);
-        }
+            {
+                unsigned short tmp = (unsigned short)tapereader.reader_buffer;
+                cpu.ACL = (cpu.ACL)|tmp;
+                //printf("RRB %c\n",tapereader.reader_buffer);
+            }
             break;
         case 06014:
-        {
-            //printf("RFC\n");
-            tapereader.reader_flag = 0;
-            if(tapereader.buffer_pos<tapereader.buffer_size){
-                tapereader.reader_buffer = tapereader.file_buffer[tapereader.buffer_pos++];
-                tapereader.reader_flag = 1;
-                //printf("READING BYTE -> %02x POSITION : %ld\n",tapereader.reader_buffer,tapereader.buffer_pos);
-            }
-            else{
+            {
+                //printf("RFC\n");
+                tapereader.reader_flag = 0;
+                if(tapereader.buffer_pos<tapereader.buffer_size){
+                    tapereader.reader_buffer = tapereader.file_buffer[tapereader.buffer_pos++];
+                    tapereader.reader_flag = 1;
+                    //printf("READING BYTE -> %02x POSITION : %ld\n",tapereader.reader_buffer,tapereader.buffer_pos);
+                }
+                else{
                 focal_loaded = 1;
+                }
             }
-        }
             break;
         case 06016:
-        {
-            //printf("RFC RRB\n");
-            tapereader.reader_flag = 0;
-            if(tapereader.buffer_pos<tapereader.buffer_size){
-                tapereader.reader_buffer = tapereader.file_buffer[tapereader.buffer_pos++];
-                tapereader.reader_flag = 1;
-                //printf("READING BYTE -> %02x POSITION : %ld\n",tapereader.reader_buffer,tapereader.buffer_pos);
-            }
-            else{
+            {
+                //printf("RFC RRB\n");
+                tapereader.reader_flag = 0;
+                if(tapereader.buffer_pos<tapereader.buffer_size){
+                    tapereader.reader_buffer = tapereader.file_buffer[tapereader.buffer_pos++];
+                    tapereader.reader_flag = 1;
+                    //printf("READING BYTE -> %02x POSITION : %ld\n",tapereader.reader_buffer,tapereader.buffer_pos);
+                }
+                else{
                 focal_loaded = 1;
+                }
+                //printf("ACL avant : %04o\n",cpu.ACL);
+
+                unsigned short tmp = (unsigned short)tapereader.reader_buffer;
+                //printf("tmp : %04o\n",tmp);
+                cpu.ACL = (cpu.ACL)|tmp;
+
+                //printf("ACL apres : %04o\n",cpu.ACL);
+                //printf("RRB %c\n",tapereader.reader_buffer);
             }
-            //printf("ACL avant : %04o\n",cpu.ACL);
-
-            unsigned short tmp = (unsigned short)tapereader.reader_buffer;
-            //printf("tmp : %04o\n",tmp);
-            cpu.ACL = (cpu.ACL)|tmp;
-
-            //printf("ACL apres : %04o\n",cpu.ACL);
-            //printf("RRB %c\n",tapereader.reader_buffer);
-        }
             break;
 
         case 06000:
@@ -348,12 +343,12 @@ void IOTV(unsigned short value)
         default:
             //printf(">>>>>>>>>>> UNHANDLED %04o before %04o\n",value,cpu.PC);
             break;
-
+    
     }
 
 }
 
-void keyboard_input(unsigned char value){
+void keyboard_input(unsigned char value){ 
     teletype.kbd_flag = 1; // set the flag !
     teletype.tti_buffer = value;
     interrupt_countdown = 1; // tout de suite je fais l'interruption
@@ -401,7 +396,7 @@ void OPRGRP1(unsigned short value)
             unsigned short tmp1 = (cpu.ACL&014000)>>11;
             unsigned short tmp2 = (cpu.ACL&03777)<<2;
             cpu.ACL = (tmp1|tmp2)&017777;
-
+                
         }else{
             //printf("RAL\n");
             unsigned short tmp1 = (cpu.ACL&010000)>>12;
@@ -411,7 +406,7 @@ void OPRGRP1(unsigned short value)
     }
 }
 
-void OPRGRP2(unsigned short value)
+void OPRGRP2(unsigned short value)    
 {
     if((value&01)==0){
         //printf("group 2\n");
@@ -466,7 +461,7 @@ void OPRGRP2(unsigned short value)
                 }
                 break;
             case 07510: //SPA
-                //printf("SPA AC = %04o\n",cpu.ACL);
+                    //printf("SPA AC = %04o\n",cpu.ACL);
                 if((cpu.ACL&04000)==0){
                     cpu.PC = (cpu.PC+1)&07777;
                 }
@@ -504,8 +499,8 @@ void OPRGRP2(unsigned short value)
                 cpu.ACL |= cpu.SR;
                 break;
             case 07610: //CLA SKP
-                //printf("CLA SKP IS HERE *********************");
-                //getchar();
+		//printf("CLA SKP IS HERE *********************");
+		//getchar();
                 cpu.PC = (cpu.PC+1)&07777;
                 cpu.ACL&=010000;
                 break;
@@ -583,7 +578,7 @@ void OPRGRP2(unsigned short value)
                 printf("******* %04o NOT IMPLEMENTED at %04o *********\n",value,cpu.PC);
                 break;
 
-
+                
 
         }
 
@@ -613,14 +608,14 @@ void (*pdp8_exec[8])(unsigned short v) = {ANDY,TADY,ISZY,DCAY,JMSY,JMPY,IOTV,OPR
 
 void execute(unsigned short word)
 {
-    cpu.IR = word >> 9;
+    opCode op = word >> 9;
     unsigned char indirect = (word & 0x100)>>8;
     unsigned char zeropage = (word & 0x80)>>7;
     unsigned char address = (word & 0x7F);
 
     //printf("\n=> %s IND %d ZP %d ADDR:%o PC ->%04o\n",opcode_label[op],indirect,zeropage,address,cpu.PC);
 
-    pdp8_exec[cpu.IR](word);
+    pdp8_exec[op](word);
 }
 
 void singleInstruction()
@@ -641,13 +636,26 @@ void version()
     printf("====================================\n");
 }
 
-int emulate(int argc, char ** argv){
+void help(char * prg_name)
+{
+    printf("Hello guys !\n");
+    printf("Usage %s \n",prg_name);
+}
 
-    unsigned short program[] = {
-    };
+void registerKeyboardInput(char (*key_in)(void)){
+    key_in_callback = key_in;
+}
 
-    version();
+void registerTeletypeOutput(void (*tty_out)(char c)){
+    tty_out_callback = tty_out;
+}
 
+
+
+
+
+int startPDP8(){
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "START PDP8 FUNCTION");
     teletype.kbd_flag = 0;
 
     //RIM LOADER
@@ -691,7 +699,7 @@ int emulate(int argc, char ** argv){
     deposit();
 
 
-    //load the program //increment memory
+    //load the program //increment memory  
     cpu.SR = 05555; //address de base
     loadAddress();
     cpu.SR = 07001;
@@ -765,7 +773,7 @@ int emulate(int argc, char ** argv){
     loadAddress();
 
     cpu.HALT = 0;
-
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "LOADING LOADER");
     loadfile("/sdcard/loader.bin"); //load that paper tape in the machine
     //loadtext("focal.txt");
     //cpu.SR = 0200; //address de base
@@ -776,16 +784,19 @@ int emulate(int argc, char ** argv){
 
     //Load focal
     while(!focal_loaded){
+
         singleInstruction();
     }
 
     for(int i=0;i<20;i++){
-        dumpCpu();
+        //dumpCpu();
         singleInstruction();
     }
     printf("loader is loaded\n");
 
-    loadfile("focal.bin");
+
+    loadfile("/sdcard/focal69.bin");
+
     cpu.SR = 07777; //address de base
     loadAddress();
     cpu.SR = 00000;
@@ -797,211 +808,37 @@ int emulate(int argc, char ** argv){
     }
     printf("focal is loaded\n");
     dumpMemory(0200);
-    //getchar();
 
 
     cpu.SR = 0200;
     loadAddress();
     cpu.SR = 0000;
     int trace=0;
+    
 
-    while(1){
+    while(1){ 
         if(interrupt_countdown > 0){
             interrupt_countdown--;
             if(interrupt_countdown == 0){
                 interrupt_countdown = -1;
                 interrupt();
             }
-
+        
         }
         singleInstruction();
-    }
-
-}
-
-unsigned char pipi[9]= {'T','Y','P','E',' ','4','+','3','\r'};
-int toto = 0;
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_sendChar(JNIEnv *env, jclass type, jchar c) {
-    //set the kbd flag to 1
-    //put the char in the tti buffer !
-    //keyboard_input((unsigned char)c);
-    keyboard_input(pipi[toto++]);
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_littlecodeshop_straight8_PDP8_getVersion(JNIEnv *env, jclass type) {
-
-    // TODO
-
-    return (*env)->NewStringUTF(env, "Hello World !!!");
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_reset(JNIEnv *env, jclass type) {
-
-    //Be nice :) put the RIM loader in
-    //RIM LOADER
-    cpu.SR = 07756;
-    loadAddress();
-    cpu.SR = 06014;                      /* 7756, RFC */
-    deposit();
-    cpu.SR = 06011;                      /* 7757, LOOP, RSF */
-    deposit();
-    cpu.SR = 05357;                      /* 7760 JMP .-1 */
-    deposit();
-    cpu.SR = 06016;                      /* 7761 RFC RRB */
-    deposit();
-    cpu.SR = 07106;                      /* 7762 CLL RTL*/
-    deposit();
-    cpu.SR = 07006;                      /* 7763 RTL */
-    deposit();
-    cpu.SR = 07510;                      /* 7764 SPA*/
-    deposit();
-    cpu.SR = 05374;                      /* 7765 JMP 7774 */
-    deposit();
-    cpu.SR = 07006;                      /* 7766 RTL */
-    deposit();
-    cpu.SR = 06011;                      /* 7767 RSF */
-    deposit();
-    cpu.SR = 05367;                      /* 7770 JMP .-1 */
-    deposit();
-    cpu.SR = 06016;                      /* 7771 RFC RRB */
-    deposit();
-    cpu.SR = 07420;                      /* 7772 SNL */
-    deposit();
-    cpu.SR = 03776;                      /* 7773 DCA I 7776 */
-    deposit();
-    cpu.SR = 03376;                      /* 7774 DCA 7776 */
-    deposit();
-    cpu.SR = 05357;                      /* 7775 JMP 7757 */
-    deposit();
-    cpu.SR = 00000;                      /* 7776, 0 */
-    deposit();
-    cpu.SR = 00000;                      /* 7777, JMP 7701 */
-    deposit();
-
-
-
-    cpu.SR = 07756; //address de base
-    loadAddress();
-
-    cpu.HALT = 0;
-
-    loadfile("/sdcard/loader.bin"); //load that paper tape in the machine
-    //loadtext("focal.txt");
-    //cpu.SR = 0200; //address de base
-    //loadAddress();
-    //while(!cpu.HALT){
-    //    singleInstruction();
-    // }
-
-    //Load loader
-    while(!focal_loaded){
-        singleInstruction();
-    }
-    for(int i=0;i<20;i++){
-        singleInstruction();
-    }
-    loadfile("/sdcard/focal69.bin");
-    cpu.SR = 07777; //address de base
-    loadAddress();
-    cpu.SR = 00000;
-
-
-    while(!cpu.HALT){
-        //dumpCpu();
-        singleInstruction();
-    }
-
-    //now start the focal
-    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "STARTING FOCAL");
-    cpu.SR = 0200;
-    loadAddress();
-
-    teletype.prt_flag = 1; //ready to receive a new char
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_deposit(JNIEnv *env, jclass type) {
-
-    deposit();
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_examine(JNIEnv *env, jclass type) {
-
-    //set AC = mem[PC]
-    unsigned short v = memory[cpu.PC]&07777;
-    cpu.ACL = (cpu.ACL+v)&017777;
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_loadAddress(JNIEnv *env, jclass type) {
-
-    loadAddress();
-
-}
-
-JNIEXPORT jstring JNICALL
-Java_com_littlecodeshop_straight8_PDP8_status(JNIEnv *env, jclass type) {
-
-    char dump[100];
-
-    sprintf(dump,"AC:%04o L:%01o PC:%04o MA:%04o MB:%04o IR:%01o",cpu.ACL&07777,(cpu.ACL&010000),cpu.PC,cpu.MA,cpu.MB,cpu.IR);
-
-    return (*env)->NewStringUTF(env, dump);
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_step(JNIEnv *env, jclass type) {
-
-    singleInstruction();
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_setSR(JNIEnv *env, jclass type, jshort value) {
-
-    cpu.SR = value&07777;
-
-}
-
-JNIEXPORT void JNICALL
-Java_com_littlecodeshop_straight8_PDP8_run(JNIEnv *env, jclass type, jint cycles) {
-
-    for(int i=0;i<cycles;i++){
-        if(interrupt_countdown > 0){
-            interrupt_countdown--;
-            if(interrupt_countdown == 0){
-                interrupt_countdown = -1;
-                interrupt();
-            }
-
+        printf("YOYO KEY_IN");
+        int c = key_in_callback();
+        if(c!=-1){
+            keyboard_input(c);
         }
-        singleInstruction();
-
+        
+        
+    //    if(kbhit()){
+    //        char c = getch();
+    //        if(c==3) exit(0);
+    //        //printf("=>>>>>%d\n",c);
+    //        keyboard_input(c);
+    //    }
     }
 
-}
-
-JNIEXPORT jint JNICALL
-Java_com_littlecodeshop_straight8_PDP8_getTeletypeChar(JNIEnv *env, jclass type) {
-
-    int c = -1;
-    if((!teletype.prt_flag)){
-        interrupt_countdown = 1;
-        teletype.prt_flag = 1;
-        c = teletype.tto_buffer&0177;
-        teletype.tto_buffer = 00;
-        //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "TELETYPE %d", c);
-    }
-
-
-    return c;
 }
