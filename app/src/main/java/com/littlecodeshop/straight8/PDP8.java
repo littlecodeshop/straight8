@@ -7,12 +7,13 @@ public class PDP8 {
 
     public static native void start();
 
-    void teletypeOutput(char c){
-        System.out.println("GOT A TTY OUT "+c);
+     public static void teletypeOutput(char c){
+
+         System.out.println("GOT A TTY OUT "+c);
     }
 
-    char teletypeInput(){
-        return ((char)-1);
+     public static char teletypeInput(){
+        return ((char)65);
     }
 
 

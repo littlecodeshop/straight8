@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include "pdp8.h"
+#include <android/log.h>
 
 extern struct pdp8cpu cpu;
 
@@ -8,19 +9,22 @@ JNIEnv * m_env = NULL;
 jclass m_type = NULL;
 
 void doJavaOut(char c) {
-
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "DOJAVAOUT : c is "+c);
     //call the java !
     jmethodID mid = (*m_env)->GetMethodID(m_env, m_type, "teletypeOutput", "(C)V");
-    if (mid == 0)
+    if (mid == 0) {
+        __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "THE mid is 0");
         return;
-    printf("In C, about to enter Java\n" );
+    }
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "IN C about to enter java");
+
     (*m_env)->CallVoidMethod(m_env,m_type,mid,c);
-    printf("In C, back from Java after the callback\n");
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "IN C back from java");
 }
 
 char doJavaInput(){
-    printf("In C, about to enter Java\n" );
-    return -1;
+    //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "DOJAVAIN");
+    return (char)-1;
 }
 
 JNIEXPORT void JNICALL
