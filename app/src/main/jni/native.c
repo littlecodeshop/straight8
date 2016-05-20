@@ -9,9 +9,11 @@ JNIEnv * m_env = NULL;
 jclass m_type = NULL;
 
 void doJavaOut(char c) {
+
+    // this code works fine
     __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "DOJAVAOUT : c is "+c);
     //call the java !
-    jmethodID mid = (*m_env)->GetMethodID(m_env, m_type, "teletypeOutput", "(C)V");
+    jmethodID mid = (*m_env)->GetStaticMethodID(m_env, m_type, "teletypeOutput", "(C)V");
     if (mid == 0) {
         __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "THE mid is 0");
         return;
@@ -30,6 +32,7 @@ char doJavaInput(){
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_start(JNIEnv *env, jclass type) {
     //demarrer le PDP !
+    __android_log_print(ANDROID_LOG_DEBUG, "PDP8", "STARTING PDP888888888");
     m_env = env;
     m_type = type;
     registerTeletypeOutput(doJavaOut);
