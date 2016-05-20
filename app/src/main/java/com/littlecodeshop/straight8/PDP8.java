@@ -1,19 +1,36 @@
 package com.littlecodeshop.straight8;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by rribier on 26/11/2015.
  */
 public class PDP8 {
 
+    static List<Character> tty_buffer;
+
+    public PDP8(){
+
+        tty_buffer = new ArrayList<>();
+
+        tty_buffer.add(new Character('a'));
+        tty_buffer.add(new Character('b'));
+        tty_buffer.add(new Character('c'));
+    }
+
     public static native void start();
 
      public static void teletypeOutput(char c){
-
          System.out.println("GOT A TTY OUT "+c);
     }
 
      public static char teletypeInput(){
-        return ((char)65);
+         if(!tty_buffer.isEmpty()){
+             char c = tty_buffer.remove(0).charValue();
+             return c;
+         }
+        return ((char)-1);
     }
 
 

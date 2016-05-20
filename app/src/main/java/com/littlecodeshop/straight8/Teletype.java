@@ -34,6 +34,7 @@ public class Teletype extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.d("TELETYPE", "onKeyUp() called with: " + "keyCode = [" + keyCode + "], event = [" + event.getKeyCharacterMap().get(keyCode,event.getMetaState()) + "]");
+        //put the key inside the PDP8
 
         return false;
     }

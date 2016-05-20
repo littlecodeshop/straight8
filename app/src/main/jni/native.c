@@ -25,20 +25,24 @@ void doJavaOut(char c) {
 }
 
 char doJavaInput(){
-    //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "DOJAVAIN");
-    return (char)-1;
+    jmethodID mid =(*m_env)->GetStaticMethodID(m_env,m_type,"teletypeInput","()C");
+    if(mid == 0){
+        __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "THE mid is 0");
+        return -1;
+    }
+    char val = (char)(*m_env)->CallCharMethod(m_env,m_type,mid);
+    return val;
 }
 
 JNIEXPORT void JNICALL
 Java_com_littlecodeshop_straight8_PDP8_start(JNIEnv *env, jclass type) {
     //demarrer le PDP !
-    __android_log_print(ANDROID_LOG_DEBUG, "PDP8", "STARTING PDP888888888");
+    __android_log_print(ANDROID_LOG_DEBUG, "PDP8", "STARTING PDP8");
     m_env = env;
     m_type = type;
     registerTeletypeOutput(doJavaOut);
     registerKeyboardInput(doJavaInput);
     startPDP8();
-
 }
 
 
