@@ -14,9 +14,11 @@ public class PDP8 {
 
         tty_buffer = new ArrayList<>();
 
-        tty_buffer.add(new Character('a'));
-        tty_buffer.add(new Character('b'));
-        tty_buffer.add(new Character('c'));
+    }
+
+    public void addToTtyBuffer(char c){
+        System.out.println("GOT :"+c);
+        tty_buffer.add(new Character(c));
     }
 
     public static native void start();

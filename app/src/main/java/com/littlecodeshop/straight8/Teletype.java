@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -35,6 +36,8 @@ public class Teletype extends AppCompatActivity {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.d("TELETYPE", "onKeyUp() called with: " + "keyCode = [" + keyCode + "], event = [" + event.getKeyCharacterMap().get(keyCode,event.getMetaState()) + "]");
         //put the key inside the PDP8
+
+        the8.addToTtyBuffer(event.getDisplayLabel());
 
         return false;
     }
